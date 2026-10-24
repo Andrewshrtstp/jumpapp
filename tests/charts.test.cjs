@@ -1,0 +1,15 @@
+const {readFileSync}=require('node:fs');
+const vm=require('node:vm');
+const assert=require('node:assert/strict');
+const ctx=vm.createContext({});vm.runInContext(readFileSync('dist/charts.js','utf8'),ctx);
+const rows=ctx.progressSeries([{date:'2026-10-03',jumps:20,jumpedSeconds:100},{date:'2026-10-01',jumps:10},{date:'2026-10-03',jumps:30,jumpedSeconds:50},{date:'2026-10-05',jumps:15,seconds:60}]);
+assert.equal(rows[0].date,'2026-10-01');assert.equal(rows[0].missing,1);
+assert.equal(rows[1].jumps,30);assert.equal(rows[1].total,150);
+assert.equal(rows[2].total,210);assert.equal(rows[2].missing,1);
+assert.equal(ctx.progressSeries([]).length,0);
+const source=readFileSync('dist/app.js','utf8');
+vm.runInContext('let jumpedSeconds=0,stepMark=1000,paused=false,steps=[{title:"Let’s jump!"}],step=0,deadline=21000;'+source.slice(source.indexOf('function accountJumpTime'),source.indexOf('let sessionGoal')),ctx);
+vm.runInContext('accountJumpTime(6000);',ctx);assert.equal(vm.runInContext('jumpedSeconds',ctx),5);
+vm.runInContext('paused=true;accountJumpTime(11000);paused=false;stepMark=11000;accountJumpTime(16000);',ctx);assert.equal(vm.runInContext('jumpedSeconds',ctx),10);
+vm.runInContext('accountJumpTime(99000)',ctx);assert.equal(vm.runInContext('jumpedSeconds',ctx),15);
+console.log('Chart aggregation and active jumping time checks passed.');
