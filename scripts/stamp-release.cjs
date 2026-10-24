@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root=path.join(__dirname,'../dist');
+let html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+html=html.replace(/\?v=[^"']+/g,'').replace(/<meta name="app-version" content="[^"]*">/g,'');
+const files=fs.readdirSync(root).filter(f=>/\.(js|css)$/.test(f)).sort();
+const hash=crypto.createHash('sha256').update(html);
+for(const f of files)hash.update(f).update(fs.readFileSync(path.join(root,f)));
+const version=hash.digest('hex').slice(0,16);
+html=html.replace('</head>',`<meta name="app-version" content="${version}"></head>`).replace(/(src|href)="([a-z-]+\.(?:js|css))"/g,(_,attr,file)=>`${attr}="${file}?v=${version}"`);
+fs.writeFileSync(path.join(root,'index.html'),html);
+fs.writeFileSync(path.join(root,'version.json'),JSON.stringify({version})+'\n');
+console.log(`Stamped app release ${version}`);
