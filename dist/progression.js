@@ -28,3 +28,10 @@ function nextMilestone(sessions) {
 function milestoneText(goal) {
   return goal.type==='jumps'?`${goal.target} consecutive jumps`:`${goal.target} seconds of continuous jumping`;
 }
+function nextWorkout(sessions,today) {
+  const {anchor}=workoutStreak(sessions,today);
+  const done=sessions.some(s=>s.date===today);
+  const planned=anchor?calendarDay(anchor)+2:calendarDay(today);
+  const next=Math.max(planned,calendarDay(today)+(done?1:0));
+  return {date:new Date(next*86400000).toISOString().slice(0,10),due:!done&&next===calendarDay(today),done};
+}
