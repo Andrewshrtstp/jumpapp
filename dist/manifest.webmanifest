@@ -1,0 +1,15 @@
+{
+  "id": "./",
+  "name": "Jump Club",
+  "short_name": "Jump Club",
+  "description": "One jump at a time. Your jump rope workout companion.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f7f3",
+  "theme_color": "#f8f7f3",
+  "icons": [
+    {"src": "icons/jumper-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/jumper-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
